@@ -64,8 +64,10 @@ void Server::handleClient(int clientSocket1, int clientSocket2) {
     write(clientSocket2, "2", sizeof(char));
     char input1[7] = "";
     char input2[7] = "";
+    char dummy[1];
     while (strcmp(input1, "End") != 0 && strcmp(input2, "End") != 0) {
         ssize_t n = read(clientSocket1, &input1, sizeof(input1));
+        read(clientSocket1, &dummy, sizeof(dummy));
         if (n == -1) {
             cout << "Error reading x" << endl;
             return;
@@ -74,9 +76,10 @@ void Server::handleClient(int clientSocket1, int clientSocket2) {
             cout << "Client disconnected" << endl;
             return;
         }
-        cout << *input1 << endl;
+        cout << "x write " << input1 << endl;
         write(clientSocket2, &input1, n);
         n = read(clientSocket2, &input2, sizeof(input2));
+        read(clientSocket2, &dummy, sizeof(dummy));
         if (n == -1) {
             cout << "Error reading x" << endl;
             return;
@@ -85,6 +88,7 @@ void Server::handleClient(int clientSocket1, int clientSocket2) {
             cout << "Client disconnected" << endl;
             return;
         }
+        cout << "o write " << input2 << endl;
         write(clientSocket1, &input2, n);
     }
 }
