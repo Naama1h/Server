@@ -31,21 +31,23 @@ void Server::start() {
     serverAddress.sin_family = AF_INET;
     serverAddress.sin_addr.s_addr = INADDR_ANY;
     serverAddress.sin_port = htons(port);
-    if (bind(serverSocket, (struct sockaddr*)&serverAddress, sizeof(serverSocket)) == -1) {
+    if (bind(serverSocket, (struct sockaddr*)&serverAddress, sizeof(serverAddress)) == -1) {
         throw "Error on binding";
     }
     // start listening to incoming connections
     listen(serverSocket, MAX_CONNECTED_CLIENT);
     // define the client socket's structures
-    struct sockaddr_in clientAddress;
-    socklen_t clientAddressLen;
+    struct sockaddr_in clientAddress1;
+    struct sockaddr_in clientAddress2;
+    socklen_t clientAddressLen1 = sizeof((struct sockaddr*) &clientAddress1);
+    socklen_t clientAddressLen2 = sizeof((struct sockaddr*) &clientAddress2);
     while (true) {
         cout << "Waiting for client connections..." << endl;
         // accept a new client connection
         int clientSocket1 = accept(serverSocket,
-                                  (struct sockaddr*)&clientAddress, &clientAddressLen);
+                                  (struct sockaddr*)&clientAddress1, &clientAddressLen1);
         int clientSocket2 = accept(serverSocket,
-                                   (struct sockaddr*)&clientAddress, &clientAddressLen);
+                                   (struct sockaddr*)&clientAddress2, &clientAddressLen2);
         cout << "Clients connected" << endl;
         if (clientSocket1 == -1 || clientSocket2 == -1) {
             throw "Error on accept";
@@ -72,6 +74,7 @@ void Server::handleClient(int clientSocket1, int clientSocket2) {
             cout << "Client disconnected" << endl;
             return;
         }
+        cout << *input1 << endl;
         write(clientSocket2, &input1, n);
         n = read(clientSocket2, &input2, sizeof(input2));
         if (n == -1) {
